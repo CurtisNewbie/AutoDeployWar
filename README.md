@@ -7,3 +7,9 @@ Change the configuration in file **"src/main/resources/config.txt"** as follows,
 
 	WILDFLY_CLI=path/to/your/jboss-cli.sh
 	WAR=path/to/your/war/file
+
+## To Run This Tool
+
+Enter following cmd in you CLI:
+
+	mvn clean compile exec:java
