@@ -1,5 +1,4 @@
-WILDFLY_CLI=/home/yongjie/wildfly19/wildfly-19.0.0.Beta2/bin/jboss-cli.sh
-WAR=/home/yongjie/git/JWTTokenDistriServer/jwttokendistrib/target/jwttokendistrib-1.0-SNAPSHOT.war
+WILDFLY_CLI=path/to/your/wildfly_home/bin/jboss-cli.sh
+WAR=path/to/your/WAR
 
 
-/home/yongjie/git/BookStoreApp/backend/backend/target/backend-1.0-SNAPSHOT.war
