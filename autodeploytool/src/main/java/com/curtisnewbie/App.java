@@ -1,6 +1,7 @@
 package com.curtisnewbie;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,12 +21,10 @@ public class App {
     private static String pathToCli;
     /** path to WAR, if it's currently not there, it doesn't matter */
     private static String warPath;
-    private static final String ALGORITHM = "MD5";
     private static String wildflyCmd;
     private static Runtime runtime;
-    private static byte[] checksum;
-    private static MessageDigest md;
-    private static Path pathToWar;
+    private static long lastChanged = -1;
+    private static File warFile;
 
     public static void main(String[] args) throws Exception {
 
@@ -44,20 +43,20 @@ public class App {
 
     static void init(String toWar, String toCli) {
         warPath = toWar;
+        warFile = new File(warPath);
         pathToCli = toCli;
         wildflyCmd = pathToCli + " --connect --command='deploy --force " + warPath + "';";
-        pathToWar = Paths.get(warPath);
         runtime = Runtime.getRuntime();
     }
 
     static void detectChange() throws Exception {
         while (true) {
-            if (checksum == null) {
-                checksum = md5sum();
+            if (lastChanged < 0) {
+                lastChanged = getLastChangedTime();
             } else {
-                byte[] temp = md5sum();
-                if (temp != null && checksum != null && !Arrays.equals(checksum, temp)) {
-                    checksum = temp;
+                long latest = getLastChangedTime();
+                if (latest > lastChanged) {
+                    lastChanged = latest;
                     System.out.println("- Change detected " + new Date());
                     deploy();
                 }
@@ -66,17 +65,8 @@ public class App {
         }
     }
 
-    static byte[] md5sum() throws Exception {
-        if (md == null) {
-            md = MessageDigest.getInstance(ALGORITHM);
-        }
-        try {
-            md.update(Files.readAllBytes(pathToWar));
-            return md.digest();
-        } catch (IOException e) {
-            // ignore
-            return null;
-        }
+    static long getLastChangedTime() {
+        return warFile.lastModified();
     }
 
     static void deploy() throws IOException {
